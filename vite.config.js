@@ -8,6 +8,11 @@ export default defineConfig({
     vue(),
     WindiCSS()
   ],
+  build: {
+    rollupInputOptions: {
+      input: ''
+    }
+  },
   server: {
     open: false,
     proxy: {
