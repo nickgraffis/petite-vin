@@ -1,0 +1,38 @@
+@keyframes spin{
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fill {
+  from {
+    top: 90%
+  }
+  to {
+    top: 10%
+  }
+}
+
+.fu-inner {
+  position: absolute;
+  overflow:hidden;
+  border-radius: 50% !important;
+}
+
+.water {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  transition: all 1s ease;
+  -webkit-transition: all 1s ease !important;
+  left: -50%;
+  top: 50%;
+  border: 1px solid transparent;
+  border-radius: 40% !important;
+  animation-duration: 10s;
+  animation-name: spin;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
