@@ -11,6 +11,7 @@ const handler = async (event, context) => {
       const records = await new Promise(async (resolve, reject) => {
         base('vin').select({
           // Selecting the first 3 records in Grid view:
+          sort: [{field: 'createdTime', direction: 'desc'}],
           maxRecords: 50,
           view: "Grid view"
         }).eachPage(function page(records, fetchNextPage) {

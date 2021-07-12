@@ -38,8 +38,8 @@
         -webkit-transform: translateZ(0);
         transition: all 1s ease;
         -webkit-transition: all 1s ease !important;
-        top: 50%;
         left: -50%;
+        top: 50%;
         border: 1px solid transparent;
         border-radius: 40% !important;
         animation-duration: 10s;
@@ -57,13 +57,16 @@
       import { createApp } from 'https://unpkg.com/petite-vue?module'
       createApp({
         vins: [],
-        moreVin: true,
+        loadingVin: true,
+        moreVin: false,
         showColors: false,
         chosenColor: 'red',
         producerInput: '',
         regionInput: '',
         grapeInput: '',
         descriptionInput: '',
+        uploadingWine: false,
+        loadingTime: 100,
         findColor(color) {
           switch (color) {
             case 'rose':
@@ -79,6 +82,7 @@
           }
         },
         addWine() {
+          this.uploadingWine = true;
           fetch(`/api/vin`, {
             method: 'POST',
             body: JSON.stringify({
@@ -92,13 +96,21 @@
           .then((res) => res.json())
           .then((data) => {
             console.log(data)
+            this.moreVin = false;
+            this.uploadingWine = false;
+            this.vins.push(data[0].fields)
           })
         },
         fetchData(){
+          const loader = setInterval(() => {
+          this.loadingTime = this.loadingTime - 1
+          }, 25)
           fetch(`/api/vin`)
           .then((res) => res.json())
           .then((data) => {
             console.log(data)
+            clearInterval(loader)
+            this.loadingVin = false
             this.vins = data.map(vin => vin.fields)
           })
         }
@@ -142,16 +154,22 @@
           <textarea :value="descriptionInput" @change="descriptionInput = event.target.value" class="apperance-none text-lg font-bold resize-none focus:outline-none" placeholder="La description"></textarea>
         </div>
         <div class="flex w-full space-x-2">
-          <div @click="addWine()" class="py-2 px-4 bg-rose-800 text-white font-bold border-2 border-rose-800 rounded-lg flex-grow flex justify-center">Ajouter du Vin</div>
+          <div @click="addWine()" class="py-2 px-4 bg-rose-800 text-white font-bold border-2 border-rose-800 rounded-lg flex-grow flex justify-center items-center">
+            <span v-if="!uploadingWine">Ajouter du Vin</span>
+            <svg v-if="uploadingWine" class="animate-spin text-white w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
           <div @click="moreVin = false" class="py-2 px-4 bg-white border-2 border-rose-800 rounded-lg text-rose-800 font-bold">Cancel</div>
         </div>
       </div>
     </div>
-    <div class="mx-4">
+    <div class="mx-4 flex flex-col min-h-screen">
       <div class="flex items-center w-full justify-between py-2"> 
         <div class="flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="text-gray-500 w-14 h-14 z-50" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" preserveAspectRatio="xMidYMid meet" viewBox="0 0 64 64"><path d="M54 20.4C54 9 48.3 2 48.3 2H15.7S10 9.1 10 20.4c0 10.8 9.3 20.9 20.9 21.5c-.1 6.3-.7 12.8-2.2 15.1c-2.2 3.2-9.8 1.6-9.8 5h26.2c0-3.4-7.6-1.8-9.8-5c-1.5-2.3-2.1-8.8-2.2-15.1C44.7 41.3 54 31.3 54 20.4M32 39.3c-9.8 0-17.9-7.8-18.9-16.7c-.1-.6-.1-1.3-.1-1.9c0-9.9 4.9-15.9 4.9-15.9h28.2s4.8 6 4.9 15.7v.2c0 9.6-8.5 18.6-19 18.6"/></svg>
-          <div class="fu-inner w-9 h-9 -mt-5 z-10">
+          <div class="fu-inner w-9 h-9 top-2 z-10">
             <div class="water  bg-rose-800 absolute z-10 w-[200%] h-[200%]"></div>
           </div>
         </div>
@@ -162,8 +180,18 @@
           vin de nick et laura
         </p>
       </div>
-  
-      <ul class="grid grid cols-4 py-4">
+      <div v-if="loadingVin"  class="w-full h-full flex-grow relative flex items-center justify-center">
+        <div class="flex items-center justify-center relative">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="text-gray-500 w-14 h-14 z-50" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" preserveAspectRatio="xMidYMid meet" viewBox="0 0 64 64"><path d="M54 20.4C54 9 48.3 2 48.3 2H15.7S10 9.1 10 20.4c0 10.8 9.3 20.9 20.9 21.5c-.1 6.3-.7 12.8-2.2 15.1c-2.2 3.2-9.8 1.6-9.8 5h26.2c0-3.4-7.6-1.8-9.8-5c-1.5-2.3-2.1-8.8-2.2-15.1C44.7 41.3 54 31.3 54 20.4M32 39.3c-9.8 0-17.9-7.8-18.9-16.7c-.1-.6-.1-1.3-.1-1.9c0-9.9 4.9-15.9 4.9-15.9h28.2s4.8 6 4.9 15.7v.2c0 9.6-8.5 18.6-19 18.6"/></svg>
+          <div class="fu-inner w-9 top-0 h-9 z-10">
+            <div 
+            class="water bg-rose-800 absolute z-10 w-[200%] h-[200%]"
+            :style="{top: loadingTime + '%'}"
+            ></div>
+          </div>
+        </div>
+      </div>
+      <ul v-if="!loadingVin" class="grid grid cols-4 py-4 space-y-4">
         <li v-for="{ color, description, region, producer, grape } in vins" class="flex items-start space-x-2">
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" class="w-6 h-6 flex-shrink-0" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 64 64"><path :class="findColor(color)" d="M15.1 22.1C16 30.1 23.3 37 32 37c9.4 0 17.1-8 17.1-16.7v-.2c-9.8-1.3-22.1 5.8-34 2" fill="currentColor"/><path class="text-gray-500" d="M54 20.4C54 9 48.3 2 48.3 2H15.7S10 9.1 10 20.4c0 10.8 9.3 20.9 20.9 21.5c-.1 6.3-.7 12.8-2.2 15.1c-2.2 3.2-9.8 1.6-9.8 5h26.2c0-3.4-7.6-1.8-9.8-5c-1.5-2.3-2.1-8.8-2.2-15.1C44.7 41.3 54 31.3 54 20.4M32 39.3c-9.8 0-17.9-7.8-18.9-16.7c-.1-.6-.1-1.3-.1-1.9c0-9.9 4.9-15.9 4.9-15.9h28.2s4.8 6 4.9 15.7v.2c0 9.6-8.5 18.6-19 18.6" fill="currentColor"/></svg>
           <div class="text-sm">
