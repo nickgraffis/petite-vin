@@ -7,5 +7,15 @@ export default defineConfig({
   plugins: [
     vue(),
     WindiCSS()
-  ]
+  ],
+  server: {
+    open: false,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8888/.netlify/functions',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, ''),
+      },
+    },
+  },
 })
