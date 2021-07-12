@@ -2,7 +2,7 @@
 **_Nick &amp; Laura's favorite wines 🍇🍷. Also having fun with petite vue._**
 
 ### Why
-A fun site built to check out **_petit-vue_** and help me and my wife to keep track of all the awesome
+A fun site built to check out **_petit-vue_** and help me and my family to keep track of all the awesome
 wines we've been lucky enough to try over the years.
 
 ## Stack
