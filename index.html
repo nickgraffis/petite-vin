@@ -11,10 +11,14 @@
     <link href="/animations.css" rel="stylesheet">
     <!-- When the petite-vue is mounted, show the content. -->
     <script>
-      const mounted = () => document.querySelector('#content').classList.remove('hidden')
+      console.log('loaded')
+      const mounted = () => {
+        console.log('mounted');
+        document.querySelector('#content').classList.remove('hidden')
+      }
     </script>
   </head>
-  <body v-scope v-effect="oninit()" class="dark:bg-gray-800" @mounted="mounted">
+  <body v-scope v-effect="oninit()" class="dark:bg-gray-800" @vue:mounted="mounted">
     <script type="module">
       import 'virtual:windi.css'
       import { createApp } from 'https://unpkg.com/petite-vue?module'
